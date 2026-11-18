@@ -1,28 +1,356 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TP WAN Projects</title>
-  <style>
-    body { font-family: Arial, sans-serif; background:#0b1220; color:#fff; margin:0; padding:40px; }
-    h1 { margin-bottom:30px; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; }
-    a { display:block; padding:24px; background:#16233b; color:#c6ff3d; border-radius:12px;
-        text-decoration:none; font-weight:bold; }
-    a:hover { background:#1f3357; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier Technologies WAN · Youssfi Jasser · RSI31</title>
+<meta name="description" content="Les TP de l'Atelier Technologies WAN (RSI31, ISET Nabeul) en simulations interactives : MPLS, VPN, redistribution, NAT/DHCP, IPsec, GRE, Frame Relay.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070b; --bg2:#080c12; --panel:#0b1018; --panel2:#0f1621; --line:#18222f; --line2:#223044;
+  --text:#dbe3ee; --muted:#7c8899; --dim:#4d5869;
+  --amber:#ffb347; --teal:#2fe3c3; --rose:#ff6b8b; --violet:#a98bff; --sky:#5cb8ff; --lime:#b6f05a;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(1200px 600px at 85% -10%,rgba(47,227,195,.07),transparent 60%),radial-gradient(900px 500px at -10% 30%,rgba(255,179,71,.05),transparent 60%);}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(#000,transparent 85%)}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px;position:relative;z-index:1}
+.mono{font-family:var(--mono)}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:rgba(5,7,11,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:24px;height:58px}
+.prompt{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prompt b{color:var(--teal);font-weight:500}.prompt i{font-style:normal;color:var(--amber)}
+.caret{display:inline-block;width:8px;height:15px;background:var(--teal);vertical-align:-2px;margin-left:4px;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.top nav{margin-left:auto;display:flex;gap:4px}
+.top nav a{font-size:14px;text-decoration:none;color:var(--muted);padding:7px 12px;border-radius:8px}
+.top nav a:hover{color:var(--text);background:var(--panel2)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.02fr 1fr;gap:48px;align-items:center;padding:72px 0 56px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(47,227,195,.15),0 0 12px var(--teal)}
+h1{font-size:clamp(40px,5.4vw,68px);line-height:1.02;letter-spacing:-.035em;margin:18px 0 22px;font-weight:700}
+h1 .hl{color:var(--amber)}
+h1 .sl{color:var(--dim);font-weight:500}
+.lead{font-size:18px;color:#aab5c4;max-width:540px;margin:0 0 30px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--sans);font-weight:600;font-size:15px;text-decoration:none;padding:12px 18px;border-radius:10px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);transition:.15s;cursor:pointer}
+.btn:hover{border-color:#34465f;transform:translateY(-1px)}
+.btn.primary{background:var(--amber);color:#1b1205;border-color:var(--amber)}
+.btn.primary:hover{background:#ffc26b}
+.btn svg{width:16px;height:16px}
+.stats{display:flex;gap:36px;margin-top:40px;flex-wrap:wrap}
+.stat b{display:block;font-family:var(--mono);font-size:30px;font-weight:700;letter-spacing:-.02em}
+.stat span{font-size:13px;color:var(--muted)}
+
+/* map */
+.map{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px;position:relative;overflow:hidden}
+.map-head{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin:2px 4px 6px}
+.live{color:var(--teal);display:flex;align-items:center;gap:7px}
+.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.map svg{width:100%;height:auto;display:block}
+.map .node{cursor:pointer}
+.map .node rect{transition:.15s}
+.map .node:hover rect.box{stroke-width:2.2;filter:url(#glow)}
+.map .lbl{font-family:var(--sans);font-size:12.5px;font-weight:600;fill:var(--text)}
+.map .sub{font-family:var(--mono);font-size:9.5px;fill:var(--muted)}
+.map .num{font-family:var(--mono);font-size:13px;font-weight:700}
+.map .zone{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em}
+.map-foot{font-size:12.5px;color:var(--muted);text-align:center;margin:4px 0 2px}
+
+/* sections */
+section{padding:56px 0}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:28px;flex-wrap:wrap}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--amber);text-transform:uppercase}
+h2{font-size:clamp(28px,3.2vw,40px);letter-spacing:-.025em;margin:8px 0 0;line-height:1.1}
+.sec-head p{color:var(--muted);max-width:420px;margin:0;font-size:15px}
+
+/* filter */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.chip{font-family:var(--mono);font-size:12.5px;padding:7px 13px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--muted);cursor:pointer}
+.chip:hover{color:var(--text)}
+.chip.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.chip i{font-style:normal;display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:7px;vertical-align:0}
+
+/* tp cards */
+.tps{display:grid;gap:16px}
+.tp{display:grid;grid-template-columns:96px 1fr 230px;gap:26px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 26px 24px;position:relative;scroll-margin-top:90px;transition:border-color .2s}
+.tp:hover{border-color:var(--line2)}
+.tp.flash{animation:flash 1.4s}
+@keyframes flash{0%,40%{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 25%,transparent)}}
+.tp::before{content:"";position:absolute;left:0;top:22px;bottom:22px;width:3px;border-radius:0 3px 3px 0;background:var(--c)}
+.tp-num{font-family:var(--mono);font-size:44px;font-weight:700;line-height:1;color:var(--c);letter-spacing:-.04em}
+.tp-num small{display:block;font-size:11px;letter-spacing:.14em;color:var(--muted);font-weight:500;margin-top:10px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.tag{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--muted)}
+.tag.t{color:var(--c);border-color:color-mix(in srgb,var(--c) 35%,transparent)}
+.tp h3{margin:0 0 6px;font-size:22px;letter-spacing:-.015em}
+.tp p{margin:0 0 14px;color:#a3aebd;font-size:15px}
+.cmds{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.cmd{font-family:var(--mono);font-size:12.5px;background:#03050a;border:1px solid var(--line);border-radius:8px;padding:7px 11px;color:#e8edf4;overflow-x:auto;white-space:nowrap}
+.cmd .pr{color:var(--c);user-select:none}
+.meta{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.meta b{color:var(--text);font-family:var(--mono);font-weight:500}
+.acts{display:flex;flex-direction:column;gap:8px}
+.acts .btn{justify-content:center;width:100%;font-size:14px;padding:10px 14px}
+.acts .btn.primary{background:var(--c);border-color:var(--c);color:#06090d}
+.acts .row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.acts .mini{font-family:var(--mono);font-size:11.5px;text-align:center;text-decoration:none;padding:8px 4px;border-radius:8px;border:1px solid var(--line2);color:var(--muted)}
+.acts .mini:hover{color:var(--text);border-color:#34465f}
+.acts .mini.off{opacity:.3;pointer-events:none}
+.thumb{display:block;margin-top:4px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#222;cursor:zoom-in}
+.thumb img{display:block;width:100%;height:auto}
+.thumb span{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);background:var(--panel2);padding:5px 8px}
+
+/* modes */
+.modes{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.mode{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+.mode .k{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.mode h4{margin:10px 0 6px;font-size:18px;display:flex;align-items:center;gap:9px}
+.mode h4 svg{width:18px;height:18px;color:var(--amber)}
+.mode p{margin:0;color:var(--muted);font-size:14px}
+
+/* tips */
+.tip{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px dashed var(--line2);border-radius:14px;padding:18px 20px;color:#a3aebd;font-size:14.5px;margin-top:18px}
+.tip b{color:var(--text)}
+.tip .ic{font-family:var(--mono);color:var(--amber);font-weight:700}
+
+footer{border-top:1px solid var(--line);margin-top:40px;padding:30px 0 44px;color:var(--muted);font-size:13.5px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer b{color:var(--text)}
+
+/* lightbox */
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:50;padding:30px;cursor:zoom-out}
+.lb.on{display:flex}.lb img{max-width:100%;max-height:100%;border-radius:10px}
+
+@media (max-width:980px){
+  .hero{grid-template-columns:1fr;padding-top:44px}
+  .tp{grid-template-columns:1fr;gap:16px}
+  .tp-num{font-size:34px}.tp-num small{display:inline;margin-left:10px}
+  .modes{grid-template-columns:1fr 1fr}
+  .top nav{display:none}
+}
+@media (max-width:560px){.modes{grid-template-columns:1fr}.stats{gap:22px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}.pkt{display:none}}
+</style>
 </head>
 <body>
-  <h1>TP WAN Projects – Simulations</h1>
-  <div class="grid">
-    <a href="SIMULATIONS/TP1_1_2/">TP1 – 1 &amp; 2</a>
-    <a href="SIMULATIONS/TP2_MPLS_VPN/">TP2 – MPLS VPN</a>
-    <a href="SIMULATIONS/TP_FRAMERELAY_BASIC/">TP – Frame Relay Basic</a>
-    <a href="SIMULATIONS/TP_IPSEC/">TP – IPSec</a>
-    <a href="SIMULATIONS/TP_LAB_REDIS/">TP – Lab Redistribution</a>
-    <a href="SIMULATIONS/VPN_GRE_IPSEC/">VPN – GRE – IPSec</a>
-    <a href="SIMULATIONS/NAT_PAT_NATD/">NAT / PAT / NATD</a>
+
+<header class="top">
+  <div class="wrap">
+    <div class="prompt"><b>rsi31@iset-nabeul</b>:<i>~/atelier-wan</i>$ ./lancer-tp<span class="caret"></span></div>
+    <nav>
+      <a href="#carte">Carte</a>
+      <a href="#tp">Les TP</a>
+      <a href="#modes">Modes</a>
+    </nav>
   </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>Atelier Technologies WAN · RSI31 · ISET Nabeul</div>
+      <h1>Mon WAN,<br><span class="hl">configuré</span> <span class="sl">ligne par ligne.</span></h1>
+      <p class="lead">Huit travaux pratiques, du backbone MPLS au Frame Relay. Chaque simulation rejoue la configuration réelle des routeurs Cisco, sous GNS3 ou Packet Tracer&nbsp;: on regarde la démonstration, ou on tape soi-même les commandes IOS dans la console. Rien à installer, tout s'ouvre dans le navigateur.</p>
+      <div class="cta">
+        <a class="btn primary" href="#tp">Voir les TP
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn" href="SIMULATIONS/TP2_MPLS_VPN/demo.html">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Démo rapide · VPN MPLS</a>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+
+    <div class="map" id="carte">
+      <div class="map-head"><span>Carte des TP · cliquez un nœud</span><span class="live">liens actifs</span></div>
+      <svg id="mapsvg" viewBox="0 0 560 448" role="img" aria-label="Carte des travaux pratiques"></svg>
+      <div class="map-foot">Chaque nœud est un TP · les paquets circulent sur les liens</div>
+    </div>
+  </div>
+
+  <section id="tp">
+    <div class="sec-head">
+      <div><div class="kicker">// parcours</div><h2>Les travaux pratiques</h2></div>
+      <p>Classés par thème. Le bouton principal ouvre directement la démonstration&nbsp;; les autres modes sont juste en dessous.</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="tps" id="tps"></div>
+  </section>
+
+  <section id="modes">
+    <div class="sec-head">
+      <div><div class="kicker">// modes</div><h2>Quatre façons d'ouvrir un TP</h2></div>
+      <p>Chaque simulation ActivePresenter propose plusieurs modes. Tous ne sont pas disponibles pour chaque TP.</p>
+    </div>
+    <div class="modes">
+      <div class="mode"><div class="k">01</div><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l5.5-3.5z" fill="currentColor"/></svg>Démo</h4><p>La configuration se déroule seule, étape par étape, avec les commandes affichées. Idéal pour une correction.</p></div>
+      <div class="mode"><div class="k">02</div><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H4zM9 20h6"/></svg>Tutoriel</h4><p>Vous faites les actions vous-même, guidé par des indications à chaque étape.</p></div>
+      <div class="mode"><div class="k">03</div><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6-6-6M12 19h8"/></svg>Pratique</h4><p>Vous tapez les commandes IOS dans la console, avec moins d'aide qu'en tutoriel.</p></div>
+      <div class="mode"><div class="k">04</div><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>Test</h4><p>Aucune aide&nbsp;: chaque étape est évaluée et un score s'affiche à la fin.</p></div>
+    </div>
+    <div class="tip"><span class="ic">i</span><div><b>Astuce&nbsp;:</b> les simulations sont lourdes (des centaines de captures). Le premier chargement peut prendre quelques secondes&nbsp;; utilisez la barre du lecteur pour avancer, revenir ou changer la vitesse.</div></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b>Youssfi Jasser</b> · RSI31 · ISET Nabeul · 2026–2027</div>
+    <div>Atelier Technologies WAN · simulations ActivePresenter · maquettes GNS3 et Packet Tracer</div>
+  </div>
+</footer>
+
+<div class="lb" id="lb"><img alt=""></div>
+
+<script>
+const S = "SIMULATIONS/";
+const THEMES = {
+  mpls:  {name:"Cœur MPLS",         c:"var(--violet)"},
+  route: {name:"Routage",           c:"var(--sky)"},
+  svc:   {name:"Services IP",       c:"var(--lime)"},
+  vpn:   {name:"VPN & sécurité",    c:"var(--rose)"},
+  fr:    {name:"Frame Relay",       c:"var(--teal)"},
+};
+const TPS = [
+  {id:"tp1", n:"01", theme:"mpls", short:"TP1", sub:"Backbone MPLS",
+   title:"Backbone MPLS : OSPF, EIGRP et LDP",
+   desc:"Construction du cœur d'un réseau opérateur (SP1, SP2, SP3) sous OSPF Area 0, réseau client en EIGRP AS 100, puis activation de MPLS/LDP et analyse des labels échangés.",
+   cmds:["SP1(config-router)# network 192.168.23.0 0.0.0.255 area 0","SP1(config)# interface loopback 0 · ip ospf network point-to-point"],
+   pdf:S+"TP1_1_2/Compte-rendu_TP1_MPLS.pdf", tool:"GNS3 · Cisco 7200"},
+  {id:"tp2", n:"02", theme:"mpls", short:"TP2", sub:"VPN MPLS",
+   dir:"TP2_MPLS_VPN", modes:["demo","tutorial","practice","test"], slides:1232, steps:366,
+   title:"VPN MPLS : VRF et MP-BGP",
+   desc:"Création de la VRF Client_A sur les PE, route distinguisher et route-targets, EIGRP dans la VRF côté client et session MP-BGP VPNv4 entre les loopbacks des PE.",
+   cmds:["SP1(config)# ip vrf Client_A · rd 100:1 · route-target both 1:100","SP1(config-router-af)# neighbor 3.3.3.3 send-community both"]},
+  {id:"redis", n:"03", theme:"route", short:"Redistribution", sub:"OSPF · EIGRP · RIPv2",
+   dir:"TP_LAB_REDIS", modes:["demo","tutorial"], slides:1665, steps:336,
+   title:"Redistribution entre OSPF, EIGRP et RIPv2",
+   desc:"Trois domaines de routage à relier : redistribution mutuelle avec choix des métriques, routes externes de type 2 et ajustement de la distance administrative pour éviter les boucles.",
+   cmds:["R2(config-router)# redistribute eigrp 1 subnets metric 50 metric-type 2","R3(config-router)# distance eigrp 90 105"]},
+  {id:"nat", n:"04", theme:"svc", short:"TP3", sub:"DHCP · NAT · PAT", tool:"Packet Tracer",
+   dir:"NAT_PAT_NATD", modes:["demo","tutorial"], slides:2385, steps:401,
+   title:"DHCP, relais DHCP, NAT statique, dynamique et PAT",
+   desc:"Serveur DHCP centralisé avec relais (ip helper-address), NAT statique pour les serveurs publiés, NAT dynamique avec pool d'adresses publiques et surcharge PAT vers le FAI.",
+   cmds:["R1(config-if)# ip helper-address 10.10.10.2","ISP(config)# ip nat inside source static 192.168.20.2 77.77.77.77"]},
+  {id:"ipsec", n:"05", theme:"vpn", short:"VPN IPsec", sub:"Site à site",
+   dir:"TP_IPSEC", modes:["demo","tutorial"], slides:611, steps:155, img:"assets/topologie-ipsec.png",
+   title:"VPN IPsec site à site",
+   desc:"Deux LAN reliés à travers un routeur WAN : politique ISAKMP (phase 1), transform-set ESP (phase 2), ACL du trafic intéressant et crypto map appliquée sur l'interface série.",
+   cmds:["R2(config)# crypto ipsec transform-set VPN-SET esp-3des esp-sha-hmac","R2(config-if)# crypto map VPN-MAP"]},
+  {id:"gre", n:"06", theme:"vpn", short:"GRE over IPsec", sub:"Tunnel chiffré",
+   dir:"VPN_GRE_IPSEC", modes:["demo","tutorial","practice","test"], slides:1191, steps:265,
+   title:"Tunnel GRE protégé par IPsec",
+   desc:"NAT/PAT sur chaque site, tunnel GRE entre router_A et router_B, routage à travers le tunnel puis chiffrement du trafic GRE par une crypto map S2SVPN.",
+   cmds:["router_A(config-if)# tunnel destination 204.20.20.2","router_A(config)# access-list 101 permit gre host 201.20.20.1 host 204.20.20.2"]},
+  {id:"fr1", n:"07", theme:"fr", short:"Frame Relay", sub:"Bases",
+   dir:"TP_FRAMERELAY_BASIC", modes:["demo","tutorial","practice","test"], slides:634, steps:147,
+   title:"Frame Relay : PVC, DLCI et mappage",
+   desc:"Encapsulation Frame Relay sur les interfaces série, routage statique entre les sites, puis passage d'Inverse ARP au mappage manuel des DLCI avec broadcast.",
+   cmds:["R1(config-if)# encapsulation frame-relay","R1(config-if)# frame-relay map ip 192.168.2.2 16 broadcast"]},
+  {id:"fr2", n:"08", theme:"fr", short:"Frame Relay avancé", sub:"Hub & spoke · secours",
+   dir:"FRAMERELAY_ADVANCED", modes:["demo","tutorial","practice","test"], slides:1501, steps:334,
+   title:"Frame Relay avancé : sous-interfaces et lien de secours",
+   desc:"LMI ANSI, sous-interfaces point à point par PVC, lien PPP de secours avec route statique flottante, puis migration vers RIPv2 et tests de basculement.",
+   cmds:["R1(config)# interface s1/1.16 point-to-point","R1(config-subif)# frame-relay interface-dlci 16"]},
+];
+const MODE_LABEL = {demo:"Démo", tutorial:"Tutoriel", practice:"Pratique", test:"Test"};
+
+/* stats */
+const sims = TPS.filter(t=>t.dir);
+const fmt = n => n.toLocaleString("fr-FR");
+document.getElementById("stats").innerHTML = [
+  [TPS.length,"travaux pratiques"],[sims.length,"simulations"],
+  [fmt(sims.reduce((a,t)=>a+t.slides,0)),"diapositives"],[fmt(sims.reduce((a,t)=>a+t.steps,0)),"saisies clavier"]
+].map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
+
+/* cards */
+const box = document.getElementById("tps");
+box.innerHTML = TPS.map(t=>{
+  const th = THEMES[t.theme];
+  const cmds = t.cmds.map(c=>{const i=c.indexOf("#");return `<div class="cmd"><span class="pr">${c.slice(0,i+1)}</span>${c.slice(i+1)}</div>`}).join("");
+  let acts = "";
+  if(t.dir){
+    acts += `<a class="btn primary" href="${S+t.dir}/demo.html"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Voir la démo</a>`;
+    acts += `<div class="row">`+["tutorial","practice","test"].map(m=>t.modes.includes(m)?`<a class="mini" href="${S+t.dir}/${m}.html">${MODE_LABEL[m]}</a>`:`<span class="mini off" title="Mode non exporté pour ce TP">${MODE_LABEL[m]}</span>`).join("")+`</div>`;
+    acts += `<a class="btn" href="${S+t.dir}/index.html">Choisir un mode</a>`;
+  }
+  if(t.pdf) acts += `<a class="btn${t.dir?"":" primary"}" href="${t.pdf}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></svg>Compte rendu (PDF)</a>`;
+  if(t.img) acts += `<a class="thumb" href="${t.img}" data-lb><img src="${t.img}" alt="Topologie GNS3 du TP" loading="lazy"><span>topologie GNS3 · agrandir</span></a>`;
+  const meta = t.dir
+    ? `<span><b>${fmt(t.slides)}</b> diapositives</span><span><b>${t.steps}</b> saisies</span><span><b>${t.modes.length}</b> modes</span>`
+    : `<span>Compte rendu détaillé · configuration, vérifications et réponses</span>`;
+  return `<article class="tp" id="${t.id}" data-theme="${t.theme}" style="--c:${th.c}">
+    <div class="tp-num">${t.n}<small>${t.dir?"SIMULATION":"COMPTE RENDU"}</small></div>
+    <div>
+      <div class="tags"><span class="tag t">${th.name}</span><span class="tag">${t.tool||"GNS3"}</span><span class="tag">${t.short}</span></div>
+      <h3>${t.title}</h3><p>${t.desc}</p><div class="cmds">${cmds}</div><div class="meta">${meta}</div>
+    </div>
+    <div class="acts">${acts}</div>
+  </article>`;
+}).join("");
+
+/* filters */
+const fl = document.getElementById("filters");
+fl.innerHTML = `<button class="chip on" data-f="all">Tous · ${TPS.length}</button>` +
+  Object.entries(THEMES).map(([k,v])=>`<button class="chip" data-f="${k}"><i style="background:${v.c}"></i>${v.name} · ${TPS.filter(t=>t.theme===k).length}</button>`).join("");
+fl.addEventListener("click",e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  fl.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===b));
+  box.querySelectorAll(".tp").forEach(c=>c.style.display=(b.dataset.f==="all"||c.dataset.theme===b.dataset.f)?"":"none");
+});
+
+/* map */
+const POS = {tp1:[95,78], tp2:[285,58], redis:[470,110], nat:[470,290], ipsec:[300,232], gre:[120,250], fr1:[110,380], fr2:[300,382]};
+const LINKS = [["tp1","tp2"],["tp2","redis"],["redis","nat"],["nat","ipsec"],["tp2","ipsec"],["ipsec","gre"],["gre","tp1"],["gre","fr1"],["fr1","fr2"],["fr2","ipsec"],["fr2","nat"]];
+const svg = document.getElementById("mapsvg");
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v.replace(/var\((.*)\)/,"$1")).trim();
+let g = `<defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+// zones
+g += `<rect x="40" y="335" width="320" height="104" rx="14" fill="${css("--teal")}" fill-opacity=".04" stroke="${css("--teal")}" stroke-opacity=".35" stroke-dasharray="4 5"/><text class="zone" x="52" y="352" fill="${css("--teal")}">NUAGE FRAME RELAY</text>`;
+g += `<rect x="40" y="22" width="300" height="100" rx="14" fill="${css("--violet")}" fill-opacity=".04" stroke="${css("--violet")}" stroke-opacity=".35" stroke-dasharray="4 5"/><text class="zone" x="52" y="39" fill="${css("--violet")}">BACKBONE MPLS</text>`;
+// links with zigzag (serial look) in the middle
+LINKS.forEach(([a,b],i)=>{
+  const [x1,y1]=POS[a],[x2,y2]=POS[b]; const mx=(x1+x2)/2,my=(y1+y2)/2;
+  const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,nx=-uy,ny=ux,z=7;
+  const p=(t,o)=>`${(mx+ux*t+nx*o).toFixed(1)},${(my+uy*t+ny*o).toFixed(1)}`;
+  const d=`M${x1},${y1} L${p(-10,0)} L${p(-3,z)} L${p(3,-z)} L${p(10,0)} L${x2},${y2}`;
+  g += `<path id="l${i}" d="${d}" fill="none" stroke="#2a3a50" stroke-width="1.6"/>`;
+  const col = css(THEMES[TPS.find(t=>t.id===a).theme].c);
+  g += `<circle class="pkt" r="3" fill="${col}" filter="url(#glow)" opacity="0"><set attributeName="opacity" to="1" begin="${(i*.45+.05).toFixed(2)}s"/><animateMotion dur="${(3+i%4*.8).toFixed(1)}s" begin="${(i*.45).toFixed(2)}s" repeatCount="indefinite" ${i%2?'keyPoints="1;0" keyTimes="0;1" calcMode="linear"':''}><mpath href="#l${i}"/></animateMotion></circle>`;
+});
+// nodes
+TPS.forEach(t=>{
+  const [x,y]=POS[t.id]; const col=css(THEMES[t.theme].c);
+  g += `<g class="node" data-id="${t.id}" tabindex="0" role="link" aria-label="${t.title}">
+    <rect class="box" x="${x-21}" y="${y-21}" width="42" height="42" rx="11" fill="#0a0f17" stroke="${col}" stroke-width="1.4"/>
+    <rect x="${x-14}" y="${y-14}" width="28" height="28" rx="7" fill="${col}" fill-opacity=".12"/>
+    <text class="num" x="${x}" y="${y+4.5}" text-anchor="middle" fill="${col}">${t.n}</text>
+    <circle cx="${x+18}" cy="${y-18}" r="3.2" fill="${t.dir?css("--teal"):css("--amber")}"/>
+    <text class="lbl" x="${x}" y="${y+38}" text-anchor="middle">${t.short}</text>
+    <text class="sub" x="${x}" y="${y+51}" text-anchor="middle">${t.sub}</text></g>`;
+});
+svg.innerHTML = g;
+const go = id => {const el=document.getElementById(id); fl.querySelector('[data-f="all"]').click(); el.scrollIntoView({behavior:"smooth",block:"center"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");};
+svg.addEventListener("click",e=>{const n=e.target.closest(".node"); if(n) go(n.dataset.id)});
+svg.addEventListener("keydown",e=>{const n=e.target.closest(".node"); if(n&&(e.key==="Enter"||e.key===" ")){e.preventDefault();go(n.dataset.id)}});
+
+/* lightbox */
+const lb=document.getElementById("lb");
+document.addEventListener("click",e=>{const a=e.target.closest("[data-lb]"); if(a){e.preventDefault(); lb.querySelector("img").src=a.href; lb.classList.add("on")}});
+lb.addEventListener("click",()=>lb.classList.remove("on"));
+</script>
 </body>
 </html>
