@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mode défi · Atelier Technologies WAN</title>
+<script>try{var t=localStorage.getItem("atelier-wan-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css?v=2">
+<style>
+.dz{max-width:820px;margin:0 auto;padding:50px 0}
+.intro h1{font-size:clamp(36px,5vw,60px);letter-spacing:-.04em;margin:14px 0 14px}
+.intro p{color:var(--text2);font-size:17px;max-width:620px}
+.set{padding:22px;margin:26px 0}
+.set h3{margin:0 0 12px;font-size:15px;font-family:var(--mono);letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.hud{display:flex;align-items:center;gap:18px;margin-bottom:16px;flex-wrap:wrap}
+.hud .pt{font-family:var(--mono);font-size:13px;color:var(--muted)}.hud .pt b{color:var(--text);font-size:18px;margin-left:4px}
+.timer{flex:1;min-width:160px;height:10px;border-radius:99px;background:var(--line2);overflow:hidden}
+.timer i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--amber),var(--teal));transform-origin:left;transition:transform .1s linear}
+.qbox{padding:28px}
+.qbox .src{font-family:var(--mono);font-size:12px;color:var(--c,var(--muted));margin-bottom:6px}
+.qbox h2{font-size:22px;line-height:1.35;margin:0 0 20px;letter-spacing:-.01em}
+.streak{font-family:var(--mono);font-size:13px;color:var(--amber)}
+.final{text-align:center;padding:40px}
+.final .ring{width:150px;height:150px;margin:0 auto 18px}.final .ring b{width:122px;height:122px;font-size:30px}
+.final h2{margin:0 0 6px}
+.rev{text-align:left;margin-top:26px;display:grid;gap:8px}
+.rev div{display:flex;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:14px;background:var(--panel2)}
+.rev .s{font-family:var(--mono);font-weight:700;flex-shrink:0}
+</style>
+</head>
+<body>
+<main class="wrap"><div class="dz" id="dz"></div></main>
+<script>
+window.PAGE=function(){
+  const W=window.WAN, I=W.ICONS, $=W.$, $$=W.$$, esc=W.esc;
+  W.shell("defi");
+  const dz=$("#dz"); const N=10, T=20;
+  let theme="all", best=0;
+  const hist=(W.store.all().d||[]); best=hist.reduce((m,h)=>Math.max(m,h.pts||h.s*100),0);
+  const pool=()=>{const out=[]; W.sorted().forEach(t=>{ if(theme!=="all"&&t.theme!==theme) return; t.quiz.forEach(q=>out.push({...q,tp:t}))}); return out};
+  const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a};
+  const home=()=>{
+    dz.innerHTML=`<div class="intro fade-in"><div class="kicker">// mode défi</div><h1>Dix questions.<br>Vingt secondes chacune.</h1>
+      <p>Les questions sont tirées au hasard dans les quiz des TP. Une bonne réponse rapporte 100 points, plus un bonus de vitesse (jusqu'à +50) et de série (+10 par bonne réponse consécutive).</p></div>
+      <div class="card set"><h3>Thème</h3><div class="row" id="th"><button class="chip on" data-t="all">Tous les TP</button>${Object.entries(W.THEMES).map(([k,v])=>`<button class="chip" data-t="${k}"><i style="background:${v.c}"></i>${v.name}</button>`).join("")}</div>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><button class="btn pri" id="go">${I.bolt}Commencer</button><span class="muted">Meilleur score : <b class="mono" style="color:var(--text)">${best}</b> pts</span></div></div>`;
+    $("#th").onclick=e=>{const b=e.target.closest(".chip"); if(!b) return; theme=b.dataset.t; $$("#th .chip").forEach(x=>x.classList.toggle("on",x===b))};
+    $("#go").onclick=start;
+  };
+  let qs, k, pts, good, streak, timer, t0, log;
+  const start=()=>{ qs=shuffle(pool()).slice(0,N).map(q=>{const idx=shuffle(q.o.map((_,i)=>i)); return {...q,o:idx.map(i=>q.o[i]),a:idx.indexOf(q.a)}}); k=0; pts=0; good=0; streak=0; log=[]; ask() };
+  const ask=()=>{
+    const q=qs[k], th=W.THEMES[q.tp.theme];
+    dz.innerHTML=`<div class="hud"><span class="pt">Question<b>${k+1}/${qs.length}</b></span><span class="pt">Score<b>${pts}</b></span><span class="streak">${streak>1?"série × "+streak:""}</span><div class="timer"><i id="tm"></i></div><span class="pt"><b id="sec">${T}</b>s</span></div>
+      <div class="card qbox fade-in" style="--c:${th.c}"><div class="src">${esc(q.tp.num)} · ${esc(q.tp.short)}</div><h2>${q.q}</h2>
+      <div class="opts">${q.o.map((o,j)=>`<button class="opt" data-j="${j}"><span class="l">${"ABCDE"[j]}</span><span>${o}</span></button>`).join("")}</div><div class="expl" id="ex"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn sm" id="nx" hidden>${k+1<qs.length?"Question suivante":"Voir le résultat"} ${I.arrow}</button></div></div>`;
+    t0=performance.now(); clearInterval(timer);
+    timer=setInterval(()=>{const el=(performance.now()-t0)/1000, r=Math.max(0,T-el); $("#tm").style.transform=`scaleX(${r/T})`; $("#sec").textContent=Math.ceil(r); if(r<=0) answer(-1)},100);
+    $(".opts").onclick=e=>{const b=e.target.closest(".opt"); if(b&&!b.disabled) answer(+b.dataset.j)};
+  };
+  const answer=j=>{
+    clearInterval(timer); const q=qs[k], ok=j===q.a, el=(performance.now()-t0)/1000;
+    $$(".opt").forEach((x,i)=>{x.disabled=true; if(i===q.a) x.classList.add("ok"); if(i===j&&!ok) x.classList.add("ko")});
+    let gain=0; if(ok){streak++; good++; gain=100+Math.round(Math.max(0,T-el)/T*50)+(streak-1)*10} else streak=0; pts+=gain;
+    log.push({q:q.q,ok,gain,tp:q.tp.num});
+    const ex=$("#ex"); ex.innerHTML=`<b>${j<0?"Temps écoulé.":ok?`Exact · +${gain} pts.`:"Raté."}</b> ${q.e}`; ex.classList.add("on"); if(!ok) ex.classList.add("ko");
+    const nx=$("#nx"); nx.hidden=false; nx.focus(); nx.onclick=()=>{k++; k<qs.length?ask():end()};
+  };
+  const end=()=>{
+    const p=Math.round(good/qs.length*100); W.store.defi(good,qs.length,0); const d=W.store.all(); d.d[0].pts=pts; try{localStorage.setItem("atelier-wan-v1",JSON.stringify(d))}catch(e){}
+    const rec=pts>best; if(rec) best=pts;
+    dz.innerHTML=`<div class="card final fade-in"><div class="ring" style="--p:${p};--c:${p>=70?"var(--teal)":p>=50?"var(--amber)":"var(--red)"}"><b>${good}/${qs.length}</b></div>
+      <h2>${pts} points${rec?" · nouveau record !":""}</h2><p class="muted">${p>=80?"Impressionnant, vous maîtrisez l'atelier.":p>=50?"Bon niveau. Relisez les corrections des questions manquées.":"Reprenez la théorie des TP concernés puis retentez."}</p>
+      <div class="pill-row" style="justify-content:center;margin-top:18px"><button class="btn pri" id="again">${I.bolt}Rejouer</button><a class="btn" href="progression.html">${I.chart}Ma progression</a></div>
+      <div class="rev">${log.map(l=>`<div><span class="s" style="color:${l.ok?"var(--teal)":"var(--red)"}">${l.ok?"+"+l.gain:"0"}</span><span><span class="muted mono" style="font-size:12px">${esc(l.tp)}</span> · ${l.q}</span></div>`).join("")}</div></div>`;
+    $("#again").onclick=start;
+  };
+  home();
+};
+</script>
+<script src="assets/js/boot.js?v=2"></script>
+</body>
+</html>

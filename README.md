@@ -6,17 +6,17 @@ Site : https://youssfijasser05-sudo.github.io/TP_WAN_PROJECTS/
 
 Les travaux pratiques de l'atelier WAN, en simulations interactives ActivePresenter (maquettes GNS3 et Packet Tracer, routeurs Cisco). Tout s'ouvre dans le navigateur, sans rien installer.
 
-| # | TP | Dossier | Modes |
-|---|----|---------|-------|
-| 01 | Backbone MPLS : OSPF, EIGRP, LDP | `SIMULATIONS/TP1_1_2` | Compte rendu PDF |
-| 02 | VPN MPLS : VRF et MP-BGP | `SIMULATIONS/TP2_MPLS_VPN` | Démo · Tutoriel · Pratique · Test |
-| 03 | Redistribution OSPF / EIGRP / RIPv2 | `SIMULATIONS/TP_LAB_REDIS` | Démo · Tutoriel |
-| 04 | DHCP, NAT statique, dynamique et PAT | `SIMULATIONS/NAT_PAT_NATD` | Démo · Tutoriel |
-| 05 | VPN IPsec site à site | `SIMULATIONS/TP_IPSEC` | Démo · Tutoriel |
-| 06 | Tunnel GRE over IPsec | `SIMULATIONS/VPN_GRE_IPSEC` | Démo · Tutoriel · Pratique · Test |
-| 07 | Frame Relay : PVC, DLCI, mappage | `SIMULATIONS/TP_FRAMERELAY_BASIC` | Démo · Tutoriel · Pratique · Test |
-| 08 | Frame Relay avancé : sous-interfaces, secours | `SIMULATIONS/FRAMERELAY_ADVANCED` | Démo · Tutoriel · Pratique · Test |
+Le site contient, pour chacun des 9 TP : théorie, topologie interactive (configurations et paquets animés), simulation intégrée, commandes, quiz et correction. Il propose aussi un mode Défi, une page Progression, une page Ressources (glossaire, ports, distances administratives) et une recherche Ctrl K.
 
-Pour ajouter un TP : copier l'export HTML5 d'ActivePresenter dans `SIMULATIONS/<NOM>/`, puis ajouter une entrée dans le tableau `TPS` de `index.html`.
+## Structure
+
+- `index.html` : accueil, carte du parcours, modules, liste des TP
+- `tp.html?id=…` : page d'un TP (ids : tp1, tp2, bgp, redis, nat, ipsec, gre, fr1, fr2)
+- `defi.html`, `progression.html`, `ressources.html`
+- `assets/js/app.js` : moteur (navigation, recherche, topologies, quiz)
+- `assets/js/data/*.js` : contenu des TP (théorie, topologie, commandes, quiz, corrections)
+- `SIMULATIONS/` : exports HTML5 ActivePresenter
+
+Pour modifier un TP, éditez son fichier dans `assets/js/data/`.
 
 Les images des simulations ont été compressées (pngquant + oxipng, jpegoptim) pour que le site reste sous la limite de 1 Go de GitHub Pages.

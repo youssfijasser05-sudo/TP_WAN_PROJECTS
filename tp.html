@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TP · Atelier Technologies WAN</title>
+<script>try{var t=localStorage.getItem("atelier-wan-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css?v=2">
+<style>
+.crumb{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding-top:28px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.crumb a{text-decoration:none}.crumb a:hover{color:var(--text)}
+.head{display:grid;grid-template-columns:1fr auto;gap:30px;align-items:end;padding:22px 0 28px}
+.head .n{font-family:var(--mono);font-size:15px;color:var(--c);letter-spacing:.06em;display:flex;align-items:center;gap:12px}
+.head .n b{font-size:56px;line-height:1;letter-spacing:-.05em}
+.head h1{font-size:clamp(30px,4vw,50px);margin:12px 0 12px;letter-spacing:-.035em}
+.head p{color:var(--text2);font-size:17px;max-width:760px;margin:0 0 16px}
+.head .acts{display:flex;flex-direction:column;gap:8px;min-width:230px}
+.head .acts .btn.pri{--acc:var(--c)}
+.meta{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}.meta b{color:var(--text);font-family:var(--mono);font-weight:500}
+.tabs{position:sticky;top:62px;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);margin:0 -28px;padding:0 28px}
+.tabs .in{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.tab{display:flex;align-items:center;gap:8px;padding:14px 16px;font-family:var(--sans);font-size:15px;font-weight:600;color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+.tab svg{width:16px;height:16px}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--text);border-bottom-color:var(--c)}
+.tab .ck{width:7px;height:7px;border-radius:50%;background:var(--teal);display:none}.tab.seen .ck{display:block}
+.pane{display:none;padding:34px 0 10px}.pane.on{display:block;animation:fi .35s both}
+.pane h2{font-size:28px;margin:0 0 6px}
+.pane .intro{color:var(--muted);margin:0 0 24px;font-size:15px}
+.obj{padding:22px 24px;margin-bottom:22px}
+.obj h3{margin:0 0 12px;font-size:16px;font-family:var(--mono);letter-spacing:.1em;color:var(--c);text-transform:uppercase;font-weight:600}
+.obj ol{margin:0;padding-left:22px;display:grid;gap:6px;color:var(--text2)}
+.th-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.concept{padding:22px}.concept .k{font-family:var(--mono);font-size:11.5px;color:var(--c)}
+.concept h3{margin:6px 0 8px;font-size:18px}.concept p{margin:0;color:var(--text2);font-size:14.5px}
+.concept p b{color:var(--text)}
+.gl{margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gl div{padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.gl b{font-family:var(--mono);font-size:13px;color:var(--c);display:block;margin-bottom:3px}.gl span{font-size:13.5px;color:var(--muted)}
+.step{display:grid;grid-template-columns:52px 1fr;gap:16px;margin-bottom:22px}
+.step .num{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:14px;color:var(--c);background:color-mix(in srgb,var(--c) 12%,transparent);border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
+.step h3{margin:6px 0 4px;font-size:18px}
+.step .r{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:10px}
+.step .note{margin-top:10px;font-size:14px;color:var(--text2);border-left:3px solid var(--amber);padding:2px 0 2px 12px}
+.sim{display:grid;grid-template-columns:1fr;gap:12px}
+.sim-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sim-frame{position:relative;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#000;aspect-ratio:16/10;max-height:78vh}
+.sim-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+.sim-ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);background:radial-gradient(ellipse at center,var(--panel2),var(--bg2))}
+.sim-ph .btn{margin-top:14px}
+.nosim{padding:30px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center}
+.nosim .ic{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;color:var(--c);background:color-mix(in srgb,var(--c) 12%,transparent)}
+.nosim .ic svg{width:28px;height:28px}
+.corr{display:flex;flex-direction:column;gap:10px}
+.cq{padding:0;overflow:hidden}
+.cq summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;gap:14px;align-items:flex-start;font-weight:600;font-size:16px}
+.cq summary::-webkit-details-marker{display:none}
+.cq summary .k{font-family:var(--mono);font-size:12px;color:var(--c);padding-top:3px;flex-shrink:0}
+.cq summary::after{content:"+";margin-left:auto;font-family:var(--mono);color:var(--muted);font-size:20px;line-height:1}
+.cq[open] summary::after{content:"−"}
+.cq .a{padding:0 22px 20px 58px;color:var(--text2);font-size:15px}
+.cq .a b{color:var(--text)}
+.pn{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:40px}
+.pn a{padding:18px 20px;text-decoration:none;display:flex;flex-direction:column;gap:4px;transition:.15s}
+.pn a:hover{border-color:var(--line3)}
+.pn small{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.1em}
+.pn b{font-size:16px}.pn .nx{text-align:right}
+.imgcard{margin-top:16px;padding:14px}.imgcard img{border-radius:10px;display:block;width:100%}.imgcard span{display:block;font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:8px}
+@media (max-width:900px){.head{grid-template-columns:1fr}.th-grid{grid-template-columns:1fr}.gl{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.gl{grid-template-columns:1fr}.pn{grid-template-columns:1fr}.step{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap" id="app"><div class="empty">Chargement…</div></main>
+<script>
+window.PAGE = function(){
+  const W=window.WAN, I=W.ICONS, $=W.$, $$=W.$$, esc=W.esc;
+  W.shell("tps");
+  const id=new URLSearchParams(location.search).get("id");
+  const t=W.tp(id); const app=$("#app");
+  if(!t){ app.innerHTML=`<div class="empty" style="padding:120px 0"><h2>TP introuvable</h2><p><a class="btn" href="index.html#parcours">Voir tous les TP</a></p></div>`; return; }
+  const th=W.THEMES[t.theme]; document.title=`${t.num} · ${t.short} · Atelier WAN`;
+  app.style.setProperty("--c",th.c);
+  W.store.visit(id);
+  const all=W.sorted(), ix=all.indexOf(t), prev=all[ix-1], next=all[ix+1];
+  const nCmd=t.steps.reduce((b,s)=>b+s.cmds.split("\n").filter(l=>l.trim()&&!l.trim().startsWith("!")).length,0);
+  const TABS=[["theorie","Théorie",I.book],["topologie","Topologie",I.net],["simulation","Simulation",I.eye],["commandes","Commandes",I.term],["quiz","Quiz",I.target],["correction","Correction",I.check]];
+  const seen=(W.store.all().t||{})[id]||{};
+
+  app.innerHTML=`
+  <div class="crumb"><a href="index.html">Accueil</a> / <a href="index.html#parcours">Les TP</a> / <span style="color:var(--c)">${esc(t.num)}</span></div>
+  <div class="head">
+    <div>
+      <div class="n"><b>${String(t.order).padStart(2,"0")}</b><span>${esc(t.num.toUpperCase())}<br><span class="muted">${esc(t.tool)}</span></span></div>
+      <h1>${esc(t.title)}</h1><p>${t.intro}</p>
+      <div class="pill-row" style="margin-bottom:14px"><span class="tag c">${th.name}</span>${t.tags.slice(0,6).map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>
+      <div class="meta">${t.sim?`<span><b>${t.sim.slides.toLocaleString("fr-FR")}</b> diapositives</span><span><b>${t.sim.steps}</b> saisies clavier</span>`:""}<span><b>${nCmd}</b> commandes</span><span><b>${t.quiz.length}</b> questions</span><span><b>${t.correction.length}</b> corrections</span></div>
+    </div>
+    <div class="acts">
+      ${t.sim?`<a class="btn pri" href="#simulation" data-go="simulation">${I.play}Voir la démo</a>`:""}
+      <a class="btn${t.sim?"":" pri"}" href="#topologie" data-go="topologie">${I.net}Topologie interactive</a>
+      ${t.pdf?`<a class="btn" href="${t.pdf}" target="_blank" rel="noopener">${I.pdf}Compte rendu (PDF)</a>`:""}
+    </div>
+  </div>
+  <div class="tabs"><div class="in">${TABS.map(([k,l,ic])=>`<button class="tab${seen[k]?" seen":""}" data-tab="${k}">${ic}${l}<span class="ck"></span></button>`).join("")}</div></div>
+
+  <section class="pane" id="p-theorie">
+    <h2>Théorie</h2><p class="intro">Les notions à maîtriser pour comprendre ce que font les commandes.</p>
+    <div class="card obj"><h3>Objectifs du TP</h3><ol>${t.objectives.map(o=>`<li>${o}</li>`).join("")}</ol></div>
+    <div class="th-grid">${t.theory.map((c,i)=>`<div class="card concept"><div class="k">NOTION ${String(i+1).padStart(2,"0")}</div><h3>${c.t}</h3><p>${c.d}</p></div>`).join("")}</div>
+    <h3 style="margin:34px 0 0;font-size:20px">Glossaire</h3>
+    <div class="gl">${t.glossary.map(([a,b])=>`<div><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div>
+  </section>
+
+  <section class="pane" id="p-topologie">
+    <h2>Topologie interactive</h2><p class="intro">Cliquez sur un équipement pour voir ses interfaces et sa configuration. Lancez un scénario pour suivre le paquet et lire la console.</p>
+    <div id="topo"></div>
+    ${t.img?`<div class="card imgcard"><img src="${t.img}" alt="Topologie réalisée sous GNS3" loading="lazy"><span>Maquette réalisée sous GNS3</span></div>`:""}
+  </section>
+
+  <section class="pane" id="p-simulation">
+    <h2>Simulation</h2>
+    ${t.sim?`<p class="intro">La manipulation complète enregistrée dans GNS3 ou Packet Tracer. Choisissez un mode : la démo se déroule seule, les autres vous font taper les commandes.</p>
+    <div class="sim"><div class="sim-bar">${Object.entries(W.MODES).map(([m,l])=>t.sim.modes.includes(m)?`<button class="btn sm${m==="demo"?" pri":""}" data-mode="${m}" style="--acc:var(--c)">${m==="demo"?I.play:""}${l}</button>`:"").join("")}
+      <a class="btn sm ghost" id="simExt" href="${W.SIM+t.sim.dir}/demo.html" target="_blank" rel="noopener" style="margin-left:auto">${I.ext}Plein écran</a></div>
+      <div class="sim-frame"><div class="sim-ph" id="simPh"><div><div class="mono" style="font-size:12px;letter-spacing:.14em">${t.sim.slides.toLocaleString("fr-FR")} DIAPOSITIVES · ${t.sim.modes.length} MODES</div><button class="btn pri" style="--acc:var(--c)" data-mode="demo">${I.play}Lancer la démo ici</button></div></div><iframe id="simIf" title="Simulation ${esc(t.short)}" allowfullscreen hidden></iframe></div>
+      <p class="muted" style="font-size:13.5px;margin:4px 0 0">Le premier chargement peut prendre quelques secondes (captures d'écran). Utilisez la barre du lecteur pour avancer, revenir ou changer la vitesse.</p></div>`
+    :`<div class="card nosim"><div class="ic">${I.net}</div><div><h3 style="margin:0 0 6px">Pas de simulation enregistrée pour ce lab</h3><p class="muted" style="margin:0 0 14px">Toute la manipulation est détaillée dans la topologie interactive (configurations routeur par routeur, scénarios animés) et dans l'onglet Commandes.</p><div class="pill-row"><button class="btn sm pri" style="--acc:var(--c)" data-go="topologie">${I.net}Topologie</button><button class="btn sm" data-go="commandes">${I.term}Commandes</button></div></div></div>`}
+  </section>
+
+  <section class="pane" id="p-commandes">
+    <h2>Commandes</h2><p class="intro">Toutes les commandes du TP, dans l'ordre, avec le routeur concerné. Le bouton « copier » retire les invites pour coller directement dans la console.</p>
+    ${t.steps.map((s,i)=>`<div class="step"><div class="num">${String(i+1).padStart(2,"0")}</div><div><h3>${esc(s.t)}</h3><div class="r">${esc(s.r||"")}</div>${W.codeBlock(s.cmds)}${s.note?`<div class="note">${s.note}</div>`:""}</div></div>`).join("")}
+  </section>
+
+  <section class="pane" id="p-quiz">
+    <h2>Quiz</h2><p class="intro">${t.quiz.length} questions sur le TP et ses notions. Réponse et explication immédiates ; le score est enregistré dans votre progression.</p>
+    <div id="quiz"></div>
+  </section>
+
+  <section class="pane" id="p-correction">
+    <h2>Correction</h2><p class="intro">Réponses justifiées aux questions de l'énoncé.${t.pdf?` Le compte rendu complet est disponible en PDF.`:""}</p>
+    <div class="corr">${t.correction.map((c,i)=>`<details class="card cq"${i===0?" open":""}><summary><span class="k">Q${i+1}</span><span>${c.q}</span></summary><div class="a">${c.a}</div></details>`).join("")}</div>
+    ${t.pdf?`<p style="margin-top:20px"><a class="btn" href="${t.pdf}" target="_blank" rel="noopener">${I.pdf}Ouvrir le compte rendu (PDF)</a></p>`:""}
+  </section>
+
+  <div class="pn">
+    ${prev?`<a class="card" href="tp.html?id=${prev.id}"><small>← PRÉCÉDENT</small><b>${esc(prev.num)} · ${esc(prev.short)}</b></a>`:"<span></span>"}
+    ${next?`<a class="card nx" href="tp.html?id=${next.id}"><small>SUIVANT →</small><b>${esc(next.num)} · ${esc(next.short)}</b></a>`:`<a class="card nx" href="defi.html"><small>ET MAINTENANT →</small><b>Mode défi</b></a>`}
+  </div>`;
+
+  let topoDone=false, quizDone=false;
+  const open=(k,scroll)=>{
+    if(!TABS.some(x=>x[0]===k)) k="theorie";
+    $$(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===k));
+    $$(".pane").forEach(p=>p.classList.toggle("on",p.id==="p-"+k));
+    if(k==="topologie"&&!topoDone){W.topo($("#topo"),t.topo,{color:th.c}); topoDone=true}
+    if(k==="quiz"&&!quizDone){W.quiz($("#quiz"),t.quiz,{id,color:th.c}); quizDone=true}
+    W.store.tab(id,k); $(`.tab[data-tab="${k}"]`).classList.add("seen");
+    history.replaceState(null,"","#"+k);
+    if(scroll) $(".tabs").scrollIntoView({behavior:"smooth"});
+  };
+  $(".tabs").addEventListener("click",e=>{const b=e.target.closest(".tab"); if(b) open(b.dataset.tab)});
+  app.addEventListener("click",e=>{
+    const g=e.target.closest("[data-go]"); if(g){e.preventDefault(); open(g.dataset.go,true); if(g.dataset.go==="simulation") loadSim("demo"); return}
+    const m=e.target.closest("[data-mode]"); if(m) loadSim(m.dataset.mode);
+  });
+  const loadSim=mode=>{ if(!t.sim) return; const f=$("#simIf"); const u=`${W.SIM+t.sim.dir}/${mode}.html`;
+    f.hidden=false; $("#simPh").style.display="none"; if(f.getAttribute("src")!==u) f.src=u; $("#simExt").href=u;
+    $$("[data-mode]").forEach(b=>{ if(b.closest(".sim-bar")) b.classList.toggle("pri",b.dataset.mode===mode)}); };
+  open((location.hash||"#theorie").slice(1));
+};
+</script>
+<script src="assets/js/boot.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ressources · Atelier Technologies WAN</title>
+<script>try{var t=localStorage.getItem("atelier-wan-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css?v=2">
+<style>
+.ph{padding:50px 0 10px}.ph h1{font-size:clamp(34px,4.6vw,56px);letter-spacing:-.04em;margin:12px 0 10px}
+.jump{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 0}
+.srch{display:flex;align-items:center;gap:10px;padding:0 14px;height:48px;border-radius:12px;border:1px solid var(--line2);background:var(--panel);margin-bottom:16px;max-width:520px}
+.srch svg{width:18px;height:18px;color:var(--muted)}.srch input{flex:1;background:none;border:0;outline:0;color:var(--text);font-family:var(--sans);font-size:16px}
+.gls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g{padding:14px 16px}.g b{font-family:var(--mono);font-size:13.5px;color:var(--c);display:block}.g p{margin:4px 0 6px;font-size:14px;color:var(--text2)}.g a{font-family:var(--mono);font-size:11.5px;color:var(--muted);text-decoration:none}.g a:hover{color:var(--text)}
+.tbls{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);font-weight:500}
+td{padding:10px 16px;border-bottom:1px solid var(--line)}tr:last-child td{border-bottom:0}
+td code{font-family:var(--mono);font-size:12.5px;color:var(--teal)}
+.shows{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.sh{padding:18px}.sh h4{margin:0 0 10px;font-size:16px;display:flex;align-items:center;gap:10px}
+.about{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+.about .card{padding:24px}.about dl{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0;font-size:14.5px}.about dt{color:var(--muted);font-family:var(--mono);font-size:12.5px;padding-top:2px}.about dd{margin:0}
+@media (max-width:900px){.gls,.tbls,.shows,.about{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap" id="app"></main>
+<script>
+window.PAGE=function(){
+  const W=window.WAN, I=W.ICONS, $=W.$, esc=W.esc; W.shell("res");
+  const tps=W.sorted();
+  const gl=[]; tps.forEach(t=>t.glossary.forEach(([a,b])=>{ if(!gl.some(g=>g.a===a)) gl.push({a,b,t}) })); gl.sort((x,y)=>x.a.localeCompare(y.a,"fr"));
+  const ports=[["BGP","TCP 179","Routage entre AS"],["LDP","UDP/TCP 646","Distribution des labels MPLS"],["OSPF","IP 89","IGP à état de liens"],["EIGRP","IP 88","IGP Cisco à vecteur de distance avancé"],["RIPv2","UDP 520","IGP à vecteur de distance (multicast 224.0.0.9)"],["DHCP","UDP 67 / 68","Serveur / client"],["DNS","UDP/TCP 53","Résolution de noms"],["ISAKMP / IKE","UDP 500","Négociation IPsec"],["ESP","IP 50","Données IPsec chiffrées"],["AH","IP 51","Authentification IPsec"],["GRE","IP 47","Tunnel générique"]];
+  const da=[["Interface connectée","0"],["Route statique","1"],["eBGP","20"],["EIGRP interne","90"],["OSPF","110"],["RIP","120"],["EIGRP externe","170"],["iBGP","200"],["Inconnu (non utilisable)","255"]];
+  const shows=[]; tps.forEach(t=>{const s=new Set(); t.steps.forEach(st=>st.cmds.split("\n").forEach(l=>{const m=l.match(/#\s*((show|sh|ping|traceroute|trace|clear|debug)\b.*)$/i); if(m) s.add(m[1].trim())})); if(s.size) shows.push({t,c:[...s]})});
+  $("#app").innerHTML=`<div class="ph"><div class="kicker">// ressources</div><h1>Boîte à outils de l'atelier</h1><p class="muted">Glossaire, ports et protocoles, distances administratives et commandes de vérification de tous les TP.</p>
+    <div class="jump"><a class="chip" href="#glossaire">Glossaire</a><a class="chip" href="#tables">Ports & distances</a><a class="chip" href="#verif">Commandes de vérification</a><a class="chip" href="#apropos">À propos</a></div></div>
+  <section id="glossaire"><div class="sec-head"><div><div class="kicker">// glossaire</div><h2>${gl.length} termes</h2></div><p>Tapez pour filtrer. Chaque terme renvoie au TP où il est expliqué.</p></div>
+    <div class="srch">${I.search}<input id="q" placeholder="Filtrer : DLCI, VRF, PAT…"></div><div class="gls" id="gls"></div></section>
+  <section id="tables"><div class="sec-head"><div><div class="kicker">// aide-mémoire</div><h2>Ports et distances</h2></div></div>
+    <div class="tbls"><div class="card"><table><thead><tr><th>Protocole</th><th>Transport</th><th>Rôle</th></tr></thead><tbody>${ports.map(r=>`<tr><td><b>${r[0]}</b></td><td><code>${r[1]}</code></td><td class="muted">${r[2]}</td></tr>`).join("")}</tbody></table></div>
+    <div class="card"><table><thead><tr><th>Source de la route</th><th>Distance administrative</th></tr></thead><tbody>${da.map(r=>`<tr><td>${r[0]}</td><td><code>${r[1]}</code></td></tr>`).join("")}</tbody></table>
+    <p class="muted" style="font-size:13.5px;padding:0 16px 14px;margin:8px 0 0">La plus petite distance gagne. Voir le <a href="tp.html?id=redis#theorie">lab redistribution</a> pour un cas où elle fausse le choix de route.</p></div></div></section>
+  <section id="verif"><div class="sec-head"><div><div class="kicker">// vérifier</div><h2>Commandes de vérification</h2></div><p>Toutes les commandes show, ping et traceroute utilisées dans les TP.</p></div>
+    <div class="shows">${shows.map(s=>{const th=W.THEMES[s.t.theme]; return `<div class="card sh" style="--c:${th.c}"><h4><span class="tag c">${esc(s.t.num)}</span>${esc(s.t.short)}</h4>${W.codeBlock(s.c.join("\n"))}</div>`}).join("")}</div></section>
+  <section id="apropos"><div class="sec-head"><div><div class="kicker">// à propos</div><h2>À propos du projet</h2></div></div>
+    <div class="about"><div class="card"><p style="margin-top:0;font-size:16px">Ce site rassemble les travaux pratiques de l'<b>Atelier Technologies WAN</b> sous forme de parcours interactifs : chaque TP réunit la théorie, une topologie animée, la simulation enregistrée des manipulations, les commandes, un quiz et la correction.</p><p class="muted" style="margin-bottom:0">Les simulations ont été réalisées avec ActivePresenter à partir des maquettes GNS3 et Packet Tracer. Les énoncés des TP sont ceux du module ; les corrections sont rédigées à partir des manipulations.</p></div>
+    <div class="card"><dl><dt>Étudiant</dt><dd><b>Youssfi Jasser</b></dd><dt>Classe</dt><dd>RSI31</dd><dt>Établissement</dt><dd>ISET Nabeul</dd><dt>Année</dt><dd>2026–2027</dd><dt>Module</dt><dd>Atelier Technologies WAN</dd><dt>Outils</dt><dd>GNS3, Packet Tracer, Wireshark, ActivePresenter</dd></dl></div></div></section>`;
+  const render=q=>{ q=(q||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+    const r=gl.filter(g=>(g.a+" "+g.b).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").includes(q));
+    $("#gls").innerHTML=r.length?r.map(g=>`<div class="card g" style="--c:${W.THEMES[g.t.theme].c}"><b>${esc(g.a)}</b><p>${esc(g.b)}</p><a href="tp.html?id=${g.t.id}#theorie">→ ${esc(g.t.num)} · ${esc(g.t.short)}</a></div>`).join(""):`<div class="muted">Aucun terme.</div>`; };
+  const q0=new URLSearchParams(location.search).get("q")||""; $("#q").value=q0; render(q0);
+  $("#q").addEventListener("input",e=>render(e.target.value));
+  if(q0) setTimeout(()=>$("#glossaire").scrollIntoView(),50);
+};
+</script>
+<script src="assets/js/boot.js?v=2"></script>
+</body>
+</html>
